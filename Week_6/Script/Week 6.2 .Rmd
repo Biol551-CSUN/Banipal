@@ -1,0 +1,40 @@
+---
+title: "Week 6.2 Lab"
+author: "Manroop"
+date: "3/3/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path= "../Output/", waring=FALSE, message=FALSE)
+```
+
+
+# Load Libraries ###
+```{r message=FALSE, warning=FALSE} 
+library(tidyverse)
+library(here)
+library(kableExtra)
+library(palmerpenguins)
+```
+
+# Creating a Table
+```{r, echo=FALSE}
+penguins %>% 
+  group_by(island) %>% 
+  summarise(flippermean = mean(flipper_length_mm, na.rm = TRUE)) %>%
+  kbl() %>% #make it a kable table
+  row_spec(2, bold = T, color = "white", background = "red") %>% 
+  kable_styling(full_width = FALSE)
+```
+
+# Make a plot
+```{r, penguin1, warning=FALSE, fig.width=3, fig.height=4, fig.asp=1.2, fig.align="center", fig.cap="Penguins Plot", echo=FALSE}
+penguins %>% 
+  ggplot(aes(x = bill_length_mm,
+             y = bill_depth_mm,
+             color = species))+
+  geom_boxplot()+
+  labs(x = "Bill Length (mm)",
+       y = "Bill Depth (mm)")+
+  theme_classic()

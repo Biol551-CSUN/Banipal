@@ -1,0 +1,52 @@
+---
+title: "Penguin Lab: 6.2"
+author: "Manroop"
+date: "3/3/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path= "../Output/",waring=FALSE, message=FALSE)  
+```
+
+# Load Libraries #
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(here)
+library(palmerpenguins) 
+library(kableExtra) 
+```
+
+# Inspect the Data #
+```{r, echo=FALSE}
+glimpse(penguins) 
+```
+
+# Table #
+```{r penguintab,echo=FALSE, warning=FALSE, echo=FALSE,}
+penguins %>% 
+  group_by(island, species) %>% 
+  drop_na() %>% 
+  summarise(mass.mean = mean(body_mass_g, na.rm =  TRUE))%>%
+  kbl() %>%
+  row_spec(2, bold = T, color = "blue", background = "grey")%>%
+  kable_styling(full_width = FALSE) 
+```
+
+# Plot#
+
+In this lab we have the data of penguins from three islands; Biscoe, Dream, and Torgsen. We will analyze how the weight of each species of penguin vary between island.
+
+
+```{r penguin2, warning=FALSE, echo=FALSE, fig.align="center"}
+penguins %>% 
+  drop_na() %>% 
+  ggplot(aes(x = species,
+             y = body_mass_g,
+             fill = island))+ 
+  geom_bar(stat = "identity")+ 
+  labs(x = "Species", 
+       y = "Body Mass (g)")+
+  theme_classic()+ 
+  facet_wrap(~island)
+```
