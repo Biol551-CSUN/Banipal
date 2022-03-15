@@ -1,0 +1,92 @@
+---
+title: "Week 7.2 Good Graph Bad Graph"
+author: "Manroop"
+date: "3/14/2022"
+output: html_document
+theme: hpstr
+---
+```{rsetup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path= "../Output/", waring=FALSE, message=FALSE)
+```
+
+In this assignment I will be using the same data set to create a very bad graph and a better graoh. To begin any type of code we first must load our libraries.
+
+# Load Libraries ###
+```{r message=FALSE, warning=FALSE} 
+library(tidyverse)
+library(here)
+library(kableExtra)
+library(tidyverse)
+library(mapdata)
+library(mapproj)
+library(tidyverse)
+library(here)
+library(ggplot2)
+library(jpeg)
+library(patchwork)
+library(ymlthis)
+library(beyonce)
+library(dplyr)
+```
+After this I will load the data I will be working with.
+
+#Load Data#
+```{r}
+chocolate <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-01-18/chocolate.csv')
+```
+As you can see in this graph, you really can not see anything or determine anything from what is given. The text is smashed together, the colors clash, and the title covers a portion of whatever graph is present. If I am being honest I have no idea what is being shown here or how it is being shown. 
+# No good #
+```{r}
+chocolate %>%
+  group_by(company_location) %>%
+  drop_na(ingredients) %>% 
+  select(Where = company_location, Ingredients = ingredients)%>%
+         ggplot(aes(x = Where,
+                       y = Ingredients)) +
+  geom_boxplot ()+
+  theme(axis.title = element_text(size = 2), #edits axis title size
+        panel.background = element_rect(fill = 'orange'),
+        plot.background = element_rect(fill = 'purple'))+ 
+  annotate("text",
+           x = "Place",
+           y = "Things", 
+           label = "Chocolate", 
+           size = 42, 
+           color = "yellow", 
+           angle = 90, 
+           fontface="bold")
+           ggsave(here("Week_7","Output","Bad Plot.pdf"))
+```
+So to get a better graph from this data I decided to analyze it through a tibble, after looking through it it is clear this is a very large data set so it is best to break it up. I did this by filtering the data to contain five European countries. From this I plotted it against that company locations ratings and used the geom_violin function so you can see the full extent of the ratings ie. its highest, lowest and avergae(also indicated by a diamond). This graph is organized easy to read and distinguished we are able to actually determine information that was portrayed through the graph.
+#Good Graph#
+```{r}
+chocolate %>%
+  group_by(company_location) %>%
+  drop_na(rating) %>%
+  summarise(mean_rating= mean(rating,
+                             na.rm = FALSE))
+filter(.data = chocolate,
+       company_location %in% c("Amsterdam", "France", "Switxerland", "Norway", "U.K."))%>%
+  ggplot(aes(x = company_location,
+          y = rating,
+          fill = company_location,
+          color = company_location)) +
+  geom_violin(trim = FALSE)+
+  stat_summary(fun = mean, 
+               geom = "point", 
+               shape = 5, 
+               size = 5, 
+               color = "blue")+
+  labs(x = "Company Location", 
+       y = "Chocolate Ratings", #y axis
+       title = "Chocolate Ratings of European Countries")+
+  theme_light()+ 
+  theme(axis.title = element_text(size = 10), 
+        plot.title = element_text(size = 20),
+        legend.position = "none")
+ggsave(here("Week_7","Output","Good Plot.pdf"))
+```
+
+```
+```
+

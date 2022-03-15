@@ -1,0 +1,51 @@
+---
+title: "Week 7.2 Script"
+author: "Manroop"
+date: "3/10/2022"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path= "../Output/",waring=FALSE, message=FALSE)  
+```
+# Load Libraries #
+```{r, message=FALSE, warning=FALSE}
+install.packages("ggmap") 
+install.packages("ggsn") 
+library(ggmap)
+library(tidyverse)
+library(here)
+library(ggsn)
+register_google(key = "AIzaSyBDBqtxOLuKdLZVuxxupxad7-uXdB6ZEMM", write = TRUE)
+```
+# Data #
+```{r}
+ChemData<-read_csv(here("Week_7","data","chemicaldata_maunalua.csv"))
+glimpse(ChemData)
+```
+# Oahu Map #
+```{r}
+Oahu<- get_map("Oahu")
+ggmap(Oahu)
+WP<-data.frame(lon = -157.7621, lat = 21.27427)
+Map1<-get_map(WP)
+ggmap(Map1)
+Map1<-get_map(WP,zoom = 17)
+ggmap(Map1)
+Map1<-get_map(WP,zoom = 17, maptype = "satellite")
+ggmap(Map1)
+Map1<-get_map(WP,zoom = 17, maptype = "watercolor")
+ggmap(Map1)
+Map1<-get_map(WP,zoom = 17, maptype = "satellite") 
+ggmap(Map1)+
+  geom_point(data = ChemData,
+             aes(x = Long, y = Lat, color = Salinity),
+             size = 4) +
+  scale_color_viridis_c()
+```
+# Geo Code #
+```{r}
+geocode("the white house")
+geocode("California State University, Northridge")
+```
+
+

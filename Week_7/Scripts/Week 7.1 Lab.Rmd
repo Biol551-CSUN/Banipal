@@ -1,0 +1,56 @@
+---
+title: "Week 7.1 Lab"
+author: "Manroop"
+date: "3/8/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path= "../Output/",waring=FALSE, message=FALSE)  
+```
+In this series of code we will be plotting the legal status of trees in San Francsico in the year "1995" when this data was originally collected. To begin we will load our libraries first.
+
+# Load Libraries #
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(lubridate)
+library(here)
+library(maps)
+library(mapdata)
+library(mapproj)
+#install.packages(c("maps", "mapproj"))
+```
+
+After this we will load and filtered our data, note I opted to obtain the data via a link opposed to downloading the data set. We filtered the tree data to contain only that collect in 1995 and we isolated the mapping to comprise only of the San Francisco region.
+
+# Get the Data #
+```{r}
+sf_trees <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-28/sf_trees.csv')%>% mutate(year = year(ymd(date))) %>% filter(year==1995)
+spec(sf_trees)
+glimpse (sf_trees)
+popdata<-read_csv(here("Week_7","data","CApopdata.csv"))
+
+sf <- map_data("county", region="California") %>% filter(subregion=="san francisco")
+```
+After we have loaded and isolated what data we want to work with we will first create a map of San Francisco and then layer the tree data over it this will plot the latitude and longitude of the trees. In this map it was organized by showing the different legal statuses by color. 
+
+# San Francisco Tree Map #
+```{r lab_7.1, message=FALSE, warning=FALSE}
+ggplot()+
+  geom_polygon(data = sf, 
+               aes(x = long, 
+                   y = lat, 
+                   group = group),
+               fill="white",
+               color = "black")+
+  geom_point(data = sf_trees,
+             aes(x = longitude, 
+                 y = latitude,
+                 color= legal_status))+
+  coord_map(projection = "mercator")+
+  theme_void()+
+  labs( title = "Legal Status of San Francsico Trees in 1995",)+
+  scale_color_discrete(name = "Legal Status")
+ggsave(here("Week_7","Output","LegalSF.pdf"))
+
+```
