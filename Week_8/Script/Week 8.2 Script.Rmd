@@ -1,0 +1,74 @@
+---
+title: "Week 8.2 Script"
+author: "Manroop"
+date: "3/17/2022"
+output: html_document
+---
+
+# Load libraries #
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+install.packages("PNWColors")
+library(PNWColors) 
+```
+
+# Data Analysis #
+```{r}
+library(tidyverse)
+df <- tibble::tibble(
+  a = rnorm(10), 
+  b = rnorm(10),
+  c = rnorm(10),
+  d = rnorm(10)
+)
+head(df)
+```
+
+
+
+```{r}
+df<-df %>%
+  mutate(a = (a-min(a, na.rm = TRUE))/(max(a, na.rm = TRUE)-min(a, na.rm = TRUE)))
+```
+
+
+
+```{r}
+df<-df %>%
+  mutate(a = (a-min(a, na.rm = TRUE))/(max(a, na.rm = TRUE)-min(a, na.rm = TRUE)),
+         b = (b-min(b, na.rm = TRUE))/(max(b, na.rm = TRUE)-min(b, na.rm = TRUE)),
+         c = (c-min(c, na.rm = TRUE))/(max(c, na.rm = TRUE)-min(c, na.rm = TRUE)),
+         d = (d-min(d, na.rm = TRUE))/(max(d, na.rm = TRUE)-min(d, na.rm = TRUE)))
+```
+
+
+# Creating Function #
+```{r}
+# temp_C <- (temp_F-32) * 5 / 9
+```
+
+```{r}
+# F_to_C <- function(){}
+```
+
+```{r}
+F_to_C <- function(temp_F){
+  temp_C <- (temp_F-32) * 5 / 9
+  return(temp_C)}
+```
+
+```{r}
+F_to_C(32)
+```
+
+```{r}
+C_to_K <- function(temp_C){
+  temp_K <- temp_C + 273.15
+  return(temp_K)
+}
+```
+
+```{r}
+C_to_K(0)
+```

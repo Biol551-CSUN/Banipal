@@ -1,0 +1,113 @@
+---
+title: "Week 8.1"
+author: "Manroop"
+date: "3/15/2022"
+output: html_document
+---
+
+### Load Libraries ###
+```{r}
+library(tidyverse)
+library(here)
+library(patchwork)
+#install.packages("ggrepel")
+library(ggrepel)
+#install.packages("gganimate")
+library(gganimate)
+#install.packages("magick")
+library(magick)
+library(palmerpenguins)
+```
+
+
+### Using Patchwork ###
+
+```{r}
+p1<-penguins %>%
+  ggplot(aes(x = body_mass_g, 
+             y = bill_length_mm, 
+             color = species))+
+  geom_point()
+p1
+```
+
+```{r}
+p2<-penguins %>%
+  ggplot(aes(x = sex, 
+             y = body_mass_g, 
+             color = species))+
+  geom_jitter(width = 0.2)
+
+p2
+```
+
+
+
+
+# Altering and Labeling Plots#
+```{r}
+p1+p2 +
+  plot_layout(guides = 'collect') + 
+  plot_annotation(tag_levels = 'A') 
+```
+
+```{r}
+p1/p2 +
+  plot_layout(guides = 'collect')+
+  plot_annotation(tag_levels = 'A')
+```
+
+```{r}
+View(mtcars)
+
+ggplot(mtcars, aes(x = wt, 
+                   y = mpg, 
+                   label = rownames(mtcars))) +
+  geom_text() + 
+  geom_point(color = 'red')
+
+ggplot(mtcars, aes(x = wt, 
+                   y = mpg, 
+                   label = rownames(mtcars))) +
+  geom_label_repel() +                       
+  geom_point(color = 'red')
+
+```
+
+# AnimatingFigures #
+```{r}
+penguins %>%
+ggplot(aes(x = body_mass_g, 
+            y = bill_depth_mm, 
+            color = species)) +
+  geom_point() +
+  transition_states(
+    year,
+    transition_length = 2,
+    state_length = 1
+  ) +
+  ease_aes("sine-in-out") + 
+  ggtitle('Year: {closest_state}') 
+  anim_save(here("Week_8","Output","mypengiungif.gif"))
+```
+## Magick 
+```{r}
+penguin<-image_read("https://pngimg.com/uploads/penguin/pinguin_PNG9.png")
+penguin
+```
+
+```{r}
+penguins %>%
+ggplot(aes(x = body_mass_g, 
+            y = bill_depth_mm, 
+            color = species)) +
+  geom_point() 
+  ggsave(here("Week_8", "Output", "penguinplot.png"))
+```
+
+```{r}
+penplot<-image_read(here("Week_8","Output","penguinplot.png"))
+out <- image_composite(penplot, penguin, offset = "+70+30")
+out
+```
+
