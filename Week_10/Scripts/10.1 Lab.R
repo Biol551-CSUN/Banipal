@@ -1,0 +1,35 @@
+# Lab #
+
+library(tidyverse)
+
+# Data Used #
+
+stars <- tibble::tribble(
+  ~lat,    ~long, ~star_no,
+  33.548, -117.805,      10L,
+  35.534, -121.083,       1L,
+  39.503, -123.743,      25L,
+  32.863,  -117.24,      22L,
+  33.46, -117.671,       8L,
+  33.548, -117.805,       3L,
+  33.603, -117.879,      15L,
+  34.39, -119.511,      23L,
+  35.156, -120.674,       4L,
+  35.316, -120.845,       7L,
+  35.534, -121.083,      35L,
+  36.623, -121.919,      21L,
+  38.306, -123.014,      14L,
+  41.78, -124.234,      17L
+)
+
+# Attempted Code #
+
+stars%>%
+  ggplot(aes(x = lat,
+             y = long))%>%
+  geom_point()+
+  theme(axis.title = element_text(size = 2)+ 
+          panel.background = element_rect(fill == 'bloo'),
+        plotbackground = element_rect(fill = 'white'))+ 
+  labs( x = "Latitude",
+        y = "Longitude")
