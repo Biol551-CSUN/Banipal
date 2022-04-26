@@ -1,0 +1,57 @@
+---
+title: "Week 12.1 Lab"
+author: "Manroop"
+date: "4/20/2022"
+output: html_document
+---
+
+
+#Load Libraries/Data#
+```{r}
+library(here)
+library(tidyverse)
+library(janitor)
+library(forcats)
+
+inter_data<- read_csv(here("Week_12",
+                           "Data",
+                           "intertidaldata.csv")) %>% 
+  clean_names() 
+inter_latitude <- read_csv(here("Week_12",
+                                "Data",
+                                "intertidaldata_latitude.csv")) %>%
+  clean_names()
+```
+#Cleaning Data#
+```{r}
+inter_lat_data<-left_join(inter_data, inter_latitude)
+
+inter_lat_data$quadrat <- inter_lat_data$quadrat %>% 
+  str_replace_all(c ("([0-9])" = "", "(\\.)" = "")) %>%
+  str_trim()
+```
+#Plotting#
+```{r}
+inter_lat_data %>%
+  mutate(quadrat=factor(quadrat, 
+                        levels = c("Low", "Mid", "High"))) %>% 
+  group_by(site, quadrat) %>%
+  summarise(algae_cover = sum(algae)) %>% 
+  left_join(inter_latitude) %>% 
+  ggplot(aes(x = quadrat, y = algae_cover, fill=quadrat)) +
+  facet_wrap(latitude~site, scale="free_x")+
+  geom_bar(stat = "identity")+
+  labs(title = "Intertidal algae coverage for different latitudes",
+       subtitle = "Latitude",
+       x = "Tide" , y = "Algae coverage (%)")+
+  theme_bw() +
+  theme(legend.position="none",
+        plot.subtitle = element_text(hjust = 0.5))
+ggsave(here("Week_12","Output","Week 12.1L.png"), width = 5, height = 7) 
+```
+
+
+
+
+
+
