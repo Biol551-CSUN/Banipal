@@ -1,0 +1,104 @@
+---
+title: "Week 13B"
+author: "Manroop"
+date: "04/28/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = '../Output/')
+```
+
+# Load Libraries # 
+```{r}
+library(tidyverse)
+library(here)
+library(palmerpenguins)
+library(broom)
+#install.packages("performance")
+library(performance)
+#install.packages("modelsummary")
+library(modelsummary)
+#install.packages("tidymodels")
+library(tidymodels)
+install.packages("flextable")
+```
+
+#Practice with Penguins#
+```{r}
+Peng_mod<-lm(bill_length_mm ~ bill_depth_mm*species, data = penguins)
+```
+```{r check}
+check_model(Peng_mod) 
+``` 
+# Making ANOVA Table # 
+```{r}
+anova(Peng_mod)
+summary(Peng_mod)
+```
+#Broom to See Results#
+```{r}
+coeffs<-tidy(Peng_mod) 
+coeffs
+
+results<-glance(Peng_mod) 
+results
+
+resid_fitted<-augment(Peng_mod)
+resid_fitted
+```
+
+# New Penguin Model #
+```{r}
+Peng_mod_noX<-lm(bill_length_mm ~ bill_depth_mm, data = penguins)
+
+models<-list("Model with interaction" = Peng_mod,
+             "Model with no interaction" = Peng_mod_noX)
+
+modelsummary(models, output = here("Week_13","Output","table.docx"))
+```
+
+# Modelplot #
+```{r Modelplot}
+install.packages("wesanderson")
+library(wesanderson)
+modelplot(models) +
+    labs(x = 'Coefficients', 
+         y = 'Term names') +
+    scale_color_manual(values = wes_palette('Darjeeling1'))
+```
+
+#Comparing Models#
+```{r}
+ models<- penguins %>%
+  ungroup()%>% 
+    nest(-species) %>%  
+  mutate(fit = map(data, ~lm(bill_length_mm~body_mass_g,data = .)))
+
+models
+models$fit 
+ results<-models %>%
+   mutate(coeffs = map(fit, tidy),
+          modelresults = map(fit, glance))  %>% 
+   select(species, coeffs, modelresults) %>% 
+   unnest() 
+results 
+```
+
+#Tidymodels#
+```{r}
+linear_reg() 
+
+```{r reg}
+lm_mod<-linear_reg() %>%
+  set_engine("lm") %>%
+  fit(bill_length_mm ~ bill_depth_mm*species, data = penguins) %>%  
+  tidy() %>% 
+  ggplot()+
+    geom_point(aes(x = term, y = estimate))+
+    geom_errorbar(aes(x = term, ymin = estimate-std.error,
+                      ymax = estimate+std.error), width = 0.1 )+
+  coord_flip()
+lm_mod
+```
+

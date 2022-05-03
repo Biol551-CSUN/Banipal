@@ -1,0 +1,112 @@
+---
+title: "Week 13A"
+author: "Manroop"
+date: "04/26/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Load Libraries #
+```{r}
+library(tidyverse)
+library(here)
+```
+# Building a Loop #
+```{r}
+print(paste("The year is", 2000))
+
+years<-c(2015:2021) 
+for (i in years){ 
+  print(paste("The year is", i))}
+
+year_data<-data.frame(matrix(ncol = 2, 
+                             nrow = length(years))) 
+
+colnames(year_data)<-c("year", "year_name")
+year_data 
+
+for (i in 1:length(years)){ 
+  year_data$year_name[i]<-paste("The year is", years[i])}
+year_data
+
+for (i in 1:length(years)){ 
+  year_data$year_name[i]<-paste("The year is", years[i]) 
+  year_data$year[i]<-years[i]}
+year_data
+```
+# Loops with Multiple Data Sets #
+```{r}
+testdata<-read_csv(here("Week_13", "Data", "cond_data","011521_CT316_1pcal.csv"))
+
+glimpse(testdata)
+
+CondPath<-here("Week_13", "Data", "cond_data")
+files <- dir(path = CondPath,pattern = ".csv")
+files
+
+cond_data<-data.frame(matrix(nrow = length(files), ncol = 3))
+colnames(cond_data)<-c("filename","mean_temp", "mean_sal")
+cond_data
+
+raw_data<-read_csv(paste0(CondPath,"/",files[1])) 
+head(raw_data)
+
+for (i in 1:length(files)){}
+
+for (i in 1:length(files)){ 
+  raw_data<-read_csv(paste0(CondPath,"/",files[i]))
+  glimpse(raw_data)}
+
+
+for (i in 1:length(files)){ 
+  raw_data<-read_csv(paste0(CondPath,"/",files[i]))
+  glimpse(raw_data)
+  cond_data$filename[i]<-files[i]}
+
+for (i in 1:length(files)){ # loop over 1:3 the number of files 
+  raw_data<-read_csv(paste0(CondPath,"/",files[i]))
+  cond_data$filename[i]<-files[i]
+  cond_data$mean_temp[i]<-mean(raw_data$Temperature, na.rm =TRUE)
+  cond_data$mean_sal[i]<-mean(raw_data$Salinity, na.rm =TRUE)}
+```
+# More using Purr #
+```{r}
+1:10 %>% 
+  map(rnorm, n = 15)
+
+1:10 %>% 
+  map(rnorm, n = 15)  %>%
+  map_dbl(mean) 
+
+1:10 %>% 
+  map(function(x) rnorm(15, x)) %>% 
+  map_dbl(mean)
+
+1:10 %>%
+  map(~ rnorm(15, .x)) %>% 
+  map_dbl(mean)
+
+CondPath<-here("Week_13", "Data", "cond_data")
+files <- dir(path = CondPath,pattern = ".csv")
+files
+files <- dir(path = CondPath,pattern = ".csv", full.names = TRUE)
+files
+
+data<-files %>%
+  set_names()%>% 
+  map_df(read_csv,.id = "filename") 
+data
+
+data<-files %>%
+  set_names()%>% 
+  map_df(read_csv,.id = "filename") %>% 
+  group_by(filename) %>%
+  summarise(mean_temp = mean(Temperature, na.rm = TRUE),
+            mean_sal = mean(Salinity,na.rm = TRUE))
+data
+```
+
+
